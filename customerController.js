@@ -32,14 +32,25 @@ module.exports =
     });
 
     },
-
+     //Etsitään kaikki asiakkaat Asiakas - tietokannasta
     fetchAll: function(req, res){
-      //connection.query
+      connection.query('Select * FROM Asiakas' , function (error, results ,fields){
+        if (error){
+          console.log("Virhe haettaessa asiakkaat tietokannasta" + error);
+          res.status(500);
+          res.json({"status" : "Ei toiminut :("});
+        }
+        else{
+          console.log("Data = " + JSON.stringify(results));
+        }
+
+      });
+
       console.log("Body = " + JSON.stringify(req.body));
       console.log("Params = " + JSON.stringify(req.query));
       console.log(req.query.nimi);
       
-      res.send("Kutsuttiin fetchAll");
+      //res.send("Kutsuttiin fetchAll");
     },
 
     create: function(req, res){
