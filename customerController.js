@@ -5,6 +5,8 @@
 
 var mysql = require('mysql');
 
+
+//Tänne vaihdetaan omat tiedot jotta saadaan kiinni  tietokannasta.
 var connection = mysql.createConnection({
   host : 'localhost',
   port : 3307,
