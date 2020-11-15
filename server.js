@@ -1,12 +1,14 @@
 
 // Asenna ensin express npm install express --save
 
-var express = require('express');
+var express = require('express'); // käytetään pyyntöjen reitittämiseen
 var app=express();
+
+var fs = require("fs");
 
 // Otetaan käyttöön body-parser, jotta voidaan html-requestista käsitellä viestin body post requestia varten... *
 var bodyParser = require('body-parser');
-// Pyyntöjen reitittämistä varten voidaan käyttää Controllereita
+// Pyyntöjen reitittämistä varten voidaan käyttää Controllereitaa
 var customerController = require('./customerController');
 
 const http = require('http');
@@ -18,11 +20,10 @@ const port = process.env.PORT || 3002;
 
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*') // Mahdollistaa kaiken hakemisen
-
-    // Jos haluttaisiin rajata hakuja joidenkin ehtojen perusteella, niin määritettäisiin näin:
-   // res.header('Access-Control-Allow-Methdos', 'GET, PUT, POST, DELETE');
-   // res.header('Access-Control-Allow-headers', 'Content-Type') 
+    res.header('Access-Control-Allow-Origin', '*');
+    // Jos halutaan, että delete ja put -metodit toimivat, niin näiden pitää olla näin:
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
 
     next();
 }
@@ -38,29 +39,16 @@ app.use(express.static('public'));
 
 // REST API Asiakas
 app.route('/Types') // route reitittää pyynnön merkkijonon ja metodin perusteella customerControlleriin
-    .get(customerController.fetchTypes)
-    .post((req,res) => {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'text/plain');
-      res.end("post metodilla mennään");
-    })
+    .get(customerController.fetchTypes);
 
-
-app.route('/Asiakas')
-    .get(customerController.fetchAll)
+app.route('/Customer')
+    .get(customerController.fetchCustomers)
     .post(customerController.create);
 
-app.route('/Asiakas/:id')
+app.route('/Customer/:id')
     .put(customerController.update)
-    .delete(customerController.delete);
+    .delete(customerController.delete); // esim. http://127.0.0.1:3002/Asiakas/122
 //
-
-app.get('/', function(request, response){
-    response.statusCode = 200;
-    response.setHeader('Content-Type', 'text/plain');
-    response.end("Terve maailma"); 
-});
-
 
 app.listen(port, hostname, () => {
   console.log(`Server running AT http://${hostname}:${port}/`);
