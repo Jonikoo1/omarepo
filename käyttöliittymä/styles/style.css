@@ -42,7 +42,7 @@ fieldset {
     width: 100%;
 }
 
-.searchBtn, .deleteBtn {
+.searchBtn, .deleteBtn, .updateBtn {
     border: black solid 1px;
     padding: 1rem 2rem;
     text-align: center;
@@ -53,6 +53,7 @@ fieldset {
 .searchBtn {
     margin-top: 1rem;
 }
+
 
 
 .gridContainer {

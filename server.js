@@ -4,7 +4,7 @@
 var express = require('express'); // käytetään pyyntöjen reitittämiseen
 var app=express();
 
-var fs = require("fs");
+//var fs = require("fs");
 
 // Otetaan käyttöön body-parser, jotta voidaan html-requestista käsitellä viestin body post requestia varten... *
 var bodyParser = require('body-parser');
@@ -21,7 +21,7 @@ const port = process.env.PORT || 3002;
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    // Jos halutaan, että delete ja put -metodit toimivat, niin näiden pitää olla näin:
+    
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
 

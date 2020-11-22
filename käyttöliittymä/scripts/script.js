@@ -1,4 +1,4 @@
-$().ready (() => {
+$().ready(() => {
     let astys = {};
 
     // haetaan asiakastyypit
@@ -22,7 +22,8 @@ $().ready (() => {
             url: `http://127.0.0.1:3002/Customer?${sp}`,
             success: (result) => {
                 showResultInTable(result, astys);
-        }});
+            }
+        });
     }
 
     // bindataan click-event
@@ -45,26 +46,31 @@ $().ready (() => {
         resizable: false,
         minWidth: 400,
         width: 'auto',
-        close: function() {
+        close: function () {
             form[0].reset();
             allFields.removeClass("ui-state-error");
         }
     });
 
+    
+
     // luodaan formi
     let form = dialog.find("form")
         .on("submit", (event) => {
             event.preventDefault();
-            if (validateAddCust(form)) {
-                let param = dialog.find("form").serialize();
-                addCust(param);
-            }
+            // if (validateAddCust(form)) {
+            let param = dialog.find("form").serialize();
+            addCust(param);
+            //}
         }
-    );
+        );
 
     // tekee post-kutsun palvelimelle ja vastauksen saatuaan jatkaa
     addCust = (param) => {
         $.post("http://127.0.0.1:3002/Customer", param)
+            .fail(function (data) {
+                $('#addStatus').css("color", "red").text("Lisäämisessä tapahtui virhe: " + data.responseJSON.error).show();
+            })
             .then((data) => {
                 showAddCustStat(data);
                 $('#addCustDialog').dialog("close");
@@ -76,7 +82,7 @@ $().ready (() => {
     showAddCustStat = (data) => {
         if (data.status == 'ok') {
             $('#addStatus').css("color", "green").text("Asiakkaan lisääminen onnistui")
-            .show().fadeOut(6000);
+                .show().fadeOut(1000);
         } else {
             $('#addStatus').css("color", "red").text("Lisäämisessä tapahtui virhe: " + data.status_text).show();
         }
@@ -136,7 +142,7 @@ searcParameters = () => {
         if (str !== '') {
             str += '&';
         }
-        str+=`asty_avain=${custType}`;
+        str += `asty_avain=${custType}`;
     }
     return str;
 }
@@ -156,32 +162,42 @@ showResultInTable = (result, astys) => {
             }
         });
         trstr += `<td><button onclick="deleteCustomer(${element.avain});" class="deleteBtn">Poista</button></td>`;
+        trstr += `<td><button onclick="updateCustomer(${element.avain});" class="updateBtn">Muuta</button></td>`;
+
+
         trstr += "</tr>\n";
         $('#data tbody').append(trstr);
     });
 }
 
-// poistetaan asiakas
-deleteCustomer = (key) => {
-    if (isNaN(key)) {
-        return;
-    }
-    $().ready(() => {
-        $("#poista").click(() => {
-            $.ajax({
-                url: 'http://localhost:3002/Customer/14', // poistettavan asiakkaan avain tässä 14
-                type: 'DELETE',
-                contentType: 'application/json',
-                //data: JSON.stringify(data), // Tähän voi laittaa datan javascriptin objektina kun tehdään put kysely
-                success: function (result) {
-                    // Päivitetään tässä yhteydessä tiedot tauluun
-                    console.log(result);
-                },
-                error: function (ajaxContext) {
-                    // Jos joku meni pieleen, niin ajetaan tässä koodia. Vaikka sitten päivitetään jotain käyttöliittymällä
-                    alert(ajaxContext.responseText)
-                }
-            });
-        })
-    });
+updateCustomer = (avain) => {
+    $('#addCustDialog').dialog("open");
+    $('#custname').val($("#custname").val() +avain);
+    $.ajax({
+        url: "http://localhost:3002/Customer/" + avain,
+        type: 'PUT',
+        success: () => {
+            fetch();
+        }
+    }).fail(function (err) {
+        console.log("Error" + err);
+
+    })
+    $('#custname').val($("#custname").val() +avain);
+},
+
+deleteCustomer = (avain) => {
+    $.ajax({
+        url: "http://localhost:3002/Customer/" + avain,
+        type: 'DELETE',
+        success: () => {
+            fetch();
+        }
+    }).fail(function (err) {
+        console.log("Error" + err);
+    })
+
+
+
 }
+
